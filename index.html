@@ -133,7 +133,7 @@
   #rsvp h3{font-family:'Playfair Display','Cormorant Garamond',serif; text-align:center; font-size:30px; margin:8px 0 30px; color:var(--ink);}
   .field{margin-bottom:22px;}
   .field label{display:block; font-family:'Cinzel',serif; font-size:11px; letter-spacing:.14em; color:var(--ink-soft); margin-bottom:8px;}
-  .field input[type=text], .field input[type=email], .field textarea, .field select{
+  .field input[type=text], .field input[type=email], .field input[type=tel], .field textarea, .field select{
     width:100%; padding:12px 14px; border-radius:8px; border:1px solid var(--line);
     background:var(--cream); color:var(--ink); font-family:'Cormorant Garamond',serif; font-size:17px;
   }
@@ -151,7 +151,7 @@
   }
   .send-btn:hover{background:var(--rose-deep);}
   .find-row{display:flex; gap:10px; margin-top:30px; border-top:1px solid var(--line); padding-top:26px;}
-  .find-row input{flex:1; padding:11px 14px; border-radius:8px; border:1px solid var(--line); background:var(--cream); font-family:'Cormorant Garamond',serif; font-size:16px;}
+  .find-row input{flex:1; padding:11px 14px; border-radius:8px; border:1px solid var(--line); background:var(--cream); color:var(--ink); font-family:'Cormorant Garamond',serif; font-size:16px;}
   .find-label{font-size:16px; color:var(--ink-soft); margin-bottom:10px;}
 
   /* ---------- Confirmation ---------- */
@@ -163,6 +163,21 @@
     border-radius:8px; font-family:'Cinzel',serif; letter-spacing:.1em; font-size:14px; color:var(--rose-deep);
   }
   footer{text-align:center; padding:40px 20px 60px; font-family:'Alex Brush',cursive; font-size:26px; color:var(--rose); opacity:.7;}
+
+  /* ---------- Responsive Adjustments ---------- */
+  @media (max-width: 600px) {
+    section { padding: 50px 16px; }
+    .card, #rsvp .card { padding: 32px 20px; margin-top: 24px; }
+    .choice-row { flex-direction: column; gap: 10px; }
+    .find-input-group { flex-direction: column; }
+    .find-input-group .btn { width: 100%; text-align: center; }
+    .btn { padding: 13px 20px; text-align: center; }
+    .card .btn { display: block; width: 100%; box-sizing: border-box; }
+    .card .btn + .btn { margin-left: 0; }
+    .date-line { font-size: 19px; }
+    .blessing { font-size: 16px; margin-bottom: 30px; }
+    .venue-name { font-size: 20px; }
+  }
 </style>
 </head>
 <body>
@@ -296,14 +311,14 @@
       <p class="label" style="text-align:center; display:block;">KINDLY REPLY BY SUNDAY, NOVEMBER 1, 2026</p>
       <h3>Sai Kalyan &amp; Gayathri</h3>
 
-      <form id="rsvp-form">
+      <form id="rsvp-form" novalidate>
         <div class="field">
-          <label>YOUR NAME</label>
+          <label>YOUR NAME <span style="color:var(--rose);">*</span></label>
           <input type="text" id="rsvp-name" placeholder="Full name" required>
         </div>
         <div class="field">
-          <label>EMAIL (OPTIONAL — TO FIND YOUR RSVP LATER)</label>
-          <input type="email" id="rsvp-email" placeholder="you@example.com">
+          <label>PHONE NUMBER <span style="color:var(--rose);">*</span></label>
+          <input type="tel" id="rsvp-phone" placeholder="e.g. (123) 456-7890" required>
         </div>
         <div class="field">
           <label>WILL YOU JOIN US?</label>
@@ -312,8 +327,8 @@
             <div class="choice" data-val="declines">Regretfully declines</div>
           </div>
         </div>
-        <div class="field">
-          <label>GUESTS IN YOUR PARTY (INCLUDING YOU)</label>
+        <div class="field" id="guests-field">
+          <label>GUESTS AT THE EVENT</label>
           <select id="rsvp-guests">
             <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
           </select>
@@ -322,14 +337,15 @@
           <label>A NOTE FOR THE COUPLE (OPTIONAL)</label>
           <textarea id="rsvp-note" placeholder="Dietary needs, well-wishes…"></textarea>
         </div>
+        <div id="rsvp-error" style="display:none; color:var(--rose); text-align:center; margin-bottom:16px; font-family:'Cormorant Garamond',serif; font-size:18px;"></div>
         <button type="submit" class="send-btn">SEND RSVP</button>
       </form>
 
       <div class="find-row">
         <div style="flex:1;">
           <div class="find-label">Already responded? Find your RSVP:</div>
-          <div style="display:flex; gap:10px;">
-            <input type="text" id="find-code" placeholder="Your code or email">
+          <div class="find-input-group" style="display:flex; gap:10px;">
+            <input type="tel" id="find-code" placeholder="e.g. (123) 456-7890">
             <button class="btn" id="find-btn" style="white-space:nowrap;">FIND</button>
           </div>
         </div>
@@ -386,31 +402,27 @@ document.querySelectorAll('.choice').forEach(c => {
   c.addEventListener('click', () => {
     document.querySelectorAll('.choice').forEach(x => x.classList.remove('active'));
     c.classList.add('active');
+    
+    // Toggle guests field visibility
+    const guestsField = document.getElementById('guests-field');
+    if (c.dataset.val === 'declines') {
+      guestsField.style.display = 'none';
+    } else {
+      guestsField.style.display = 'block';
+    }
   });
 });
 
+const scriptURL = 'https://script.google.com/macros/s/AKfycbwcFRgPbi4H7qOalRNi1R9BRfYfQnQAcmV-yppBM9jUsO8pnDFCbyDC66w80Ay33CyC/exec';
+
 // ----- storage helpers (per-viewer, local only) -----
-function saveRSVP(entry){
+function saveLocalRSVP(entry){
   try{
-    localStorage.setItem('rsvp_' + entry.code, JSON.stringify(entry));
-    localStorage.setItem('rsvp_last_code', entry.code);
+    localStorage.setItem('rsvp_' + entry.phone, JSON.stringify(entry));
+    localStorage.setItem('rsvp_last_phone', entry.phone);
   }catch(e){ console.error('Storage error', e); }
 }
-function findRSVP(query){
-  try{
-    query = query.trim().toLowerCase();
-    for(let i=0;i<localStorage.length;i++){
-      const k = localStorage.key(i);
-      if(k && k.startsWith('rsvp_') && k !== 'rsvp_last_code'){
-        const entry = JSON.parse(localStorage.getItem(k));
-        if(entry.code.toLowerCase() === query || (entry.email && entry.email.toLowerCase() === query)){
-          return entry;
-        }
-      }
-    }
-  }catch(e){ console.error('Storage error', e); }
-  return null;
-}
+
 function showConfirmation(entry){
   const title = document.getElementById('confirm-title');
   const body = document.getElementById('confirm-body');
@@ -422,16 +434,30 @@ function showConfirmation(entry){
     title.textContent = 'We\'ll miss you, ' + entry.name.split(' ')[0];
     body.textContent = 'Thank you for letting us know. You\'ll be in our thoughts on the day.';
   }
-  cta.innerHTML = 'CODE: ' + entry.code;
-  cta.style.pointerEvents = 'none';
+  
+  cta.innerHTML = 'EDIT RESPONSE';
+  cta.style.pointerEvents = 'auto';
+  cta.onclick = function(e) {
+    e.preventDefault();
+    document.getElementById('rsvp-name').value = entry.name;
+    document.getElementById('rsvp-phone').value = entry.phone;
+    if(entry.attending === 'accepts') {
+      document.querySelector('.choice[data-val="accepts"]').click();
+      document.getElementById('rsvp-guests').value = entry.guests || '1';
+    } else {
+      document.querySelector('.choice[data-val="declines"]').click();
+    }
+    document.getElementById('rsvp-note').value = entry.note || '';
+    document.getElementById('rsvp').scrollIntoView({behavior:'smooth'});
+  };
 }
 
 // ----- load last RSVP on page load -----
 (function(){
   try{
-    const lastCode = localStorage.getItem('rsvp_last_code');
-    if(lastCode){
-      const entry = JSON.parse(localStorage.getItem('rsvp_' + lastCode));
+    const lastPhone = localStorage.getItem('rsvp_last_phone');
+    if(lastPhone){
+      const entry = JSON.parse(localStorage.getItem('rsvp_' + lastPhone));
       if(entry) showConfirmation(entry);
     }
   }catch(e){}
@@ -440,30 +466,94 @@ function showConfirmation(entry){
 // ----- form submit -----
 document.getElementById('rsvp-form').addEventListener('submit', function(e){
   e.preventDefault();
+  
+  const errorDiv = document.getElementById('rsvp-error');
+  errorDiv.style.display = 'none';
+
   const name = document.getElementById('rsvp-name').value.trim();
-  if(!name) return;
-  const email = document.getElementById('rsvp-email').value.trim();
+  const phone = document.getElementById('rsvp-phone').value.trim();
+  
+  if(!name || !phone) {
+    errorDiv.textContent = 'Please provide both your Name and Phone Number.';
+    errorDiv.style.display = 'block';
+    return;
+  }
   const attending = document.querySelector('.choice.active').dataset.val;
-  const guests = document.getElementById('rsvp-guests').value;
+  const guests = attending === 'accepts' ? document.getElementById('rsvp-guests').value : '0';
   const note = document.getElementById('rsvp-note').value.trim();
-  const code = Math.random().toString(36).slice(2,8).toUpperCase();
-  const entry = {name, email, attending, guests, note, code};
-  saveRSVP(entry);
-  showConfirmation(entry);
-  document.getElementById('confirm').scrollIntoView({behavior:'smooth'});
+  const entry = {name, phone, attending, guests, note};
+  
+  const btn = document.querySelector('.send-btn');
+  const originalText = btn.textContent;
+  btn.textContent = 'SENDING...';
+  btn.disabled = true;
+
+  const formData = new FormData();
+  formData.append('name', name);
+  formData.append('phone', phone);
+  formData.append('attending', attending);
+  formData.append('guests', guests);
+  formData.append('note', note);
+
+  fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' })
+    .then(() => {
+      saveLocalRSVP(entry);
+      showConfirmation(entry);
+      document.getElementById('confirm').scrollIntoView({behavior:'smooth'});
+    })
+    .catch(error => {
+      console.error('Error!', error.message);
+      alert('There was a network error, please try again.');
+    })
+    .finally(() => {
+      btn.textContent = originalText;
+      btn.disabled = false;
+      document.getElementById('rsvp-form').reset();
+    });
 });
 
 // ----- find RSVP -----
 document.getElementById('find-btn').addEventListener('click', function(){
-  const q = document.getElementById('find-code').value;
+  const q = document.getElementById('find-code').value.trim();
   if(!q) return;
-  const entry = findRSVP(q);
-  if(entry){
-    showConfirmation(entry);
+  
+  const btn = document.getElementById('find-btn');
+  const originalText = btn.textContent;
+  btn.textContent = '...';
+  btn.disabled = true;
+
+  // Try local first
+  let localEntry = null;
+  try { localEntry = JSON.parse(localStorage.getItem('rsvp_' + q)); } catch(e){}
+  
+  if (localEntry) {
+    showConfirmation(localEntry);
     document.getElementById('confirm').scrollIntoView({behavior:'smooth'});
-  } else {
-    alert('No RSVP found for that code or email.');
+    btn.textContent = originalText;
+    btn.disabled = false;
+    return;
   }
+
+  // If not local, fetch from Google Apps Script
+  fetch(scriptURL + '?phone=' + encodeURIComponent(q))
+    .then(res => res.json())
+    .then(data => {
+      if (data.result === 'success') {
+        saveLocalRSVP(data.data);
+        showConfirmation(data.data);
+        document.getElementById('confirm').scrollIntoView({behavior:'smooth'});
+      } else {
+        alert('No RSVP found for that phone number.');
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert('Could not find RSVP. Make sure the number is correct or try again.');
+    })
+    .finally(() => {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    });
 });
 </script>
 </body>
