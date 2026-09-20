@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sai Kalyan &amp; Gayathri</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#fbf3ef;
+    --cream-2:#f6ebe4;
+    --rose:#b56a7c;
+    --rose-deep:#9c5468;
+    --sage:#8ca583;
+    --ink:#5b4a48;
+    --ink-soft:#8a7876;
+    --line:#e3cfc9;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  html,body{margin:0;padding:0;}
+  body{
+    background:linear-gradient(160deg,#fdf6f2 0%,#f9e9e2 45%,#f7e2da 100%);
+    color:var(--ink);
+    font-family:'Cormorant Garamond', serif;
+    font-size:19px;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --cream:#231a19; --cream-2:#2b201f; --ink:#f1e6e2; --ink-soft:#c9b6b2; --line:#4a3735;
+    }
+    body{background:linear-gradient(160deg,#231a19 0%,#2b201f 100%);}
+  }
+  :root[data-theme="dark"]{
+    --cream:#231a19; --cream-2:#2b201f; --ink:#f1e6e2; --ink-soft:#c9b6b2; --line:#4a3735;
+  }
+  :root[data-theme="dark"] body{background:linear-gradient(160deg,#231a19 0%,#2b201f 100%);}
+
+  /* floating petals across whole page */
+  .petal-field{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;}
+  .petal-field span{
+    position:absolute; width:7px; height:7px; border-radius:50%; background:#e3a3ae; opacity:.55;
+  }
+
+  .script{font-family:'Alex Brush', cursive; font-weight:400;}
+  .label{
+    font-family:'Cinzel', serif; font-size:12px; letter-spacing:.22em;
+    color:var(--rose); font-weight:500;
+  }
+
+  /* ---------- Envelope intro ---------- */
+  #envelope-screen{
+    position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center;
+    background:
+      repeating-linear-gradient(135deg, rgba(0,0,0,.015) 0px, rgba(0,0,0,.015) 1px, transparent 1px, transparent 3px),
+      linear-gradient(160deg,#eeeae5,#e3ddd6);
+    cursor:pointer; transition:opacity .8s ease;
+  }
+  #envelope-screen.hide{opacity:0; pointer-events:none;}
+  .envelope{position:relative; width:min(80vw,380px); aspect-ratio:380/240; filter:drop-shadow(0 25px 45px rgba(90,70,60,.22)); perspective:900px;}
+  .envelope svg{position:absolute; inset:0; width:100%; height:100%; display:block;}
+  .env-flap{
+    position:absolute; top:0; left:0; width:100%; height:58.3333%;
+    transform-origin:top center; transition:transform 1.1s cubic-bezier(.6,0,.3,1);
+    z-index:3; backface-visibility:hidden;
+  }
+  #envelope-screen.opened .env-flap{transform:rotateX(180deg);}
+  .env-seal{
+    position:absolute; top:41.6%; left:50%; transform:translate(-50%,-50%);
+    width:50px; height:50px; border-radius:50%; background:var(--rose);
+    display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Cinzel',serif;
+    font-size:15px; letter-spacing:.03em; box-shadow:0 4px 10px rgba(150,80,90,.4); z-index:4; transition:opacity .4s ease;
+  }
+  #envelope-screen.opened .env-seal{opacity:0;}
+  .env-hint{
+    position:absolute; bottom:-48px; left:0; right:0; text-align:center;
+    font-family:'Cinzel',serif; font-size:11px; letter-spacing:.2em; color:#8a7876;
+  }
+
+
+  /* ---------- decorative florals ---------- */
+  .floral{position:absolute; pointer-events:none; opacity:.95; z-index:0; width:200px; max-width:40vw;}
+  .floral svg{display:block; width:100%; height:auto;}
+  .tl{top:-10px; left:-10px;}
+  .br{bottom:-10px; right:-10px; transform:rotate(180deg);}
+
+  section{position:relative; padding:80px 24px; overflow:hidden;}
+  .wrap{max-width:760px; margin:0 auto; position:relative; z-index:1;}
+
+  /* ---------- Hero ---------- */
+  #hero{text-align:center; padding-top:70px;}
+  .blessing{font-style:italic; color:var(--ink-soft); font-size:17px; max-width:520px; margin:0 auto 40px;}
+  .names{font-family:'Alex Brush',cursive; font-size:clamp(42px,9vw,74px); color:var(--rose-deep); margin:10px 0 26px; line-height:1.1;}
+  .names .amp{color:var(--sage); font-size:.8em; padding:0 6px;}
+  .divider{display:flex; align-items:center; justify-content:center; gap:14px; margin:26px auto; width:220px;}
+  .divider .rule{flex:1; height:1px; background:var(--line);}
+  .divider .dot{width:7px; height:7px; border-radius:50%; border:1px solid var(--rose); transform:rotate(45deg);}
+  .date-line{font-size:22px; letter-spacing:.03em; color:var(--ink);}
+  .rsvp-note{color:var(--ink-soft); margin-top:34px; font-size:18px;}
+
+  /* ---------- When & Where ---------- */
+  #details{text-align:center;}
+  .card{
+    background:rgba(255,252,250,.75); backdrop-filter:blur(2px);
+    border:1px solid var(--line); border-radius:10px;
+    padding:44px 30px; max-width:520px; margin:36px auto 0;
+    box-shadow:0 10px 30px rgba(150,90,90,.08);
+  }
+  :root[data-theme="dark"] .card{background:rgba(43,32,31,.75);}
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .card{background:rgba(43,32,31,.75);} }
+  .card h3{font-family:'Cinzel',serif; font-size:24px; font-weight:500; margin:6px 0 18px; color:var(--ink);}
+  .venue-name{font-size:22px; margin:14px 0 4px;}
+  .venue-addr{color:var(--ink-soft); margin-bottom:26px;}
+  .btn{
+    display:inline-block; font-family:'Cinzel',serif; font-size:12px; letter-spacing:.16em;
+    text-decoration:none; padding:13px 28px; border-radius:30px; border:1px solid var(--rose);
+    color:var(--rose-deep); background:transparent; cursor:pointer; transition:background .25s,color .25s;
+  }
+  .btn:hover{background:var(--rose); color:#fff;}
+  .btn.solid{background:var(--rose); color:#fff; border-color:var(--rose);}
+  .btn.solid:hover{background:var(--rose-deep);}
+  .btn + .btn{margin-left:14px;}
+
+  /* ---------- RSVP form ---------- */
+  #rsvp .card{max-width:560px; text-align:left; padding:44px 34px;}
+  #rsvp h3{font-family:'Playfair Display','Cormorant Garamond',serif; text-align:center; font-size:30px; margin:8px 0 30px; color:var(--ink);}
+  .field{margin-bottom:22px;}
+  .field label{display:block; font-family:'Cinzel',serif; font-size:11px; letter-spacing:.14em; color:var(--ink-soft); margin-bottom:8px;}
+  .field input[type=text], .field input[type=email], .field textarea, .field select{
+    width:100%; padding:12px 14px; border-radius:8px; border:1px solid var(--line);
+    background:var(--cream); color:var(--ink); font-family:'Cormorant Garamond',serif; font-size:17px;
+  }
+  .field textarea{resize:vertical; min-height:80px;}
+  .choice-row{display:flex; gap:12px;}
+  .choice{
+    flex:1; text-align:center; padding:13px; border-radius:30px; border:1px solid var(--line);
+    cursor:pointer; font-size:17px; background:var(--cream); transition:.2s;
+  }
+  .choice.active{background:var(--rose); border-color:var(--rose); color:#fff;}
+  .send-btn{
+    width:100%; padding:15px; border:none; border-radius:30px; background:var(--rose);
+    color:#fff; font-family:'Cinzel',serif; letter-spacing:.14em; font-size:13px; cursor:pointer;
+    transition:background .2s;
+  }
+  .send-btn:hover{background:var(--rose-deep);}
+  .find-row{display:flex; gap:10px; margin-top:30px; border-top:1px solid var(--line); padding-top:26px;}
+  .find-row input{flex:1; padding:11px 14px; border-radius:8px; border:1px solid var(--line); background:var(--cream); font-family:'Cormorant Garamond',serif; font-size:16px;}
+  .find-label{font-size:16px; color:var(--ink-soft); margin-bottom:10px;}
+
+  /* ---------- Confirmation ---------- */
+  #confirm .card{text-align:center; max-width:520px;}
+  #confirm h3{font-family:'Playfair Display','Cormorant Garamond',serif; font-size:28px; margin:8px 0 12px;}
+  #confirm p{color:var(--ink-soft);}
+  .rsvp-code{
+    display:inline-block; margin-top:18px; padding:8px 18px; border:1px dashed var(--rose);
+    border-radius:8px; font-family:'Cinzel',serif; letter-spacing:.1em; font-size:14px; color:var(--rose-deep);
+  }
+  footer{text-align:center; padding:40px 20px 60px; font-family:'Alex Brush',cursive; font-size:26px; color:var(--rose); opacity:.7;}
+</style>
+</head>
+<body>
+
+<div id="envelope-screen">
+  <div class="envelope" id="envelope">
+    <svg viewBox="0 0 380 240" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="380" height="240" rx="8" fill="#eee6de"/>
+      <path d="M6 232 L190 122 L374 232 Z" fill="#e6dbd1"/>
+    </svg>
+    <svg class="env-flap" viewBox="0 0 380 140" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 8 C0 3.6 3.6 0 8 0 L372 0 C376.4 0 380 3.6 380 8 L380 10 L190 140 L0 10 Z" fill="#f2ece6" stroke="#e3d6cb" stroke-width="1"/>
+    </svg>
+    <div class="env-seal">S&amp;G</div>
+    <div class="env-hint">TAP TO OPEN</div>
+  </div>
+</div>
+
+<div class="petal-field" id="petal-field"></div>
+
+<main id="page" style="opacity:0; transition:opacity 1s ease;">
+
+<section id="hero">
+  <div class="floral tl"><svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" stroke="#9cb28f" stroke-width="2" opacity=".6">
+    <path d="M15 15 C 55 25, 90 55, 105 100"/>
+    <path d="M15 15 C 40 45, 55 70, 60 95"/>
+  </g>
+  <g>
+    <ellipse cx="30" cy="55" rx="10" ry="16" fill="#a8bf98" transform="rotate(-30 30 55)"/>
+    <ellipse cx="55" cy="80" rx="9" ry="15" fill="#a8bf98" transform="rotate(20 55 80)"/>
+  </g>
+  <g transform="translate(28,28)">
+    <circle cx="0" cy="-14" r="11" fill="#e6a4b4"/>
+    <circle cx="13" cy="-6" r="11" fill="#eebfc8"/>
+    <circle cx="13" cy="9" r="11" fill="#dd8fa0"/>
+    <circle cx="0" cy="16" r="11" fill="#eebfc8"/>
+    <circle cx="-13" cy="9" r="11" fill="#e6a4b4"/>
+    <circle cx="-13" cy="-6" r="11" fill="#f2cdd3"/>
+    <circle cx="0" cy="0" r="8" fill="#e9b23f"/>
+  </g>
+  <g transform="translate(88,20) scale(.7)">
+    <circle cx="0" cy="-14" r="11" fill="#eebfc8"/>
+    <circle cx="13" cy="-6" r="11" fill="#e6a4b4"/>
+    <circle cx="13" cy="9" r="11" fill="#f2cdd3"/>
+    <circle cx="0" cy="16" r="11" fill="#dd8fa0"/>
+    <circle cx="-13" cy="9" r="11" fill="#eebfc8"/>
+    <circle cx="-13" cy="-6" r="11" fill="#e6a4b4"/>
+    <circle cx="0" cy="0" r="8" fill="#e9b23f"/>
+  </g>
+  <g transform="translate(95,95) scale(.55)">
+    <circle cx="0" cy="-14" r="11" fill="#dd8fa0"/>
+    <circle cx="13" cy="-6" r="11" fill="#eebfc8"/>
+    <circle cx="13" cy="9" r="11" fill="#e6a4b4"/>
+    <circle cx="0" cy="16" r="11" fill="#f2cdd3"/>
+    <circle cx="-13" cy="9" r="11" fill="#dd8fa0"/>
+    <circle cx="-13" cy="-6" r="11" fill="#eebfc8"/>
+    <circle cx="0" cy="0" r="8" fill="#e9b23f"/>
+  </g>
+  <circle cx="60" cy="50" r="4" fill="#f2cdd3"/>
+  <circle cx="120" cy="60" r="3" fill="#e6a4b4"/>
+  <circle cx="45" cy="100" r="3" fill="#dd8fa0"/>
+</svg></div>
+  <div class="wrap">
+    <p class="blessing">With the blessings of our beloved parents and elders, we are beginning a new chapter of love, companionship, and togetherness. As two hearts come together, we look forward to creating a lifetime of beautiful memories.</p>
+    <h1 class="names">Sai Kalyan <span class="amp">&amp;</span> Gayathri</h1>
+    <div class="divider"><div class="rule"></div><div class="dot"></div><div class="rule"></div></div>
+    <p class="date-line">Friday, November 20, 2026</p>
+    <p class="rsvp-note">We would be delighted to have you join us and bless us on our special day.</p>
+    <div style="margin-top:30px;"><a class="btn" href="#details">WHEN &amp; WHERE ↓</a></div>
+  </div>
+  <div class="floral br"><svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" stroke="#9cb28f" stroke-width="2" opacity=".6">
+    <path d="M15 15 C 55 25, 90 55, 105 100"/>
+    <path d="M15 15 C 40 45, 55 70, 60 95"/>
+  </g>
+  <g>
+    <ellipse cx="30" cy="55" rx="10" ry="16" fill="#a8bf98" transform="rotate(-30 30 55)"/>
+    <ellipse cx="55" cy="80" rx="9" ry="15" fill="#a8bf98" transform="rotate(20 55 80)"/>
+  </g>
+  <g transform="translate(28,28)">
+    <circle cx="0" cy="-14" r="11" fill="#e6a4b4"/>
+    <circle cx="13" cy="-6" r="11" fill="#eebfc8"/>
+    <circle cx="13" cy="9" r="11" fill="#dd8fa0"/>
+    <circle cx="0" cy="16" r="11" fill="#eebfc8"/>
+    <circle cx="-13" cy="9" r="11" fill="#e6a4b4"/>
+    <circle cx="-13" cy="-6" r="11" fill="#f2cdd3"/>
+    <circle cx="0" cy="0" r="8" fill="#e9b23f"/>
+  </g>
+  <g transform="translate(88,20) scale(.7)">
+    <circle cx="0" cy="-14" r="11" fill="#eebfc8"/>
+    <circle cx="13" cy="-6" r="11" fill="#e6a4b4"/>
+    <circle cx="13" cy="9" r="11" fill="#f2cdd3"/>
+    <circle cx="0" cy="16" r="11" fill="#dd8fa0"/>
+    <circle cx="-13" cy="9" r="11" fill="#eebfc8"/>
+    <circle cx="-13" cy="-6" r="11" fill="#e6a4b4"/>
+    <circle cx="0" cy="0" r="8" fill="#e9b23f"/>
+  </g>
+  <g transform="translate(95,95) scale(.55)">
+    <circle cx="0" cy="-14" r="11" fill="#dd8fa0"/>
+    <circle cx="13" cy="-6" r="11" fill="#eebfc8"/>
+    <circle cx="13" cy="9" r="11" fill="#e6a4b4"/>
+    <circle cx="0" cy="16" r="11" fill="#f2cdd3"/>
+    <circle cx="-13" cy="9" r="11" fill="#dd8fa0"/>
+    <circle cx="-13" cy="-6" r="11" fill="#eebfc8"/>
+    <circle cx="0" cy="0" r="8" fill="#e9b23f"/>
+  </g>
+  <circle cx="60" cy="50" r="4" fill="#f2cdd3"/>
+  <circle cx="120" cy="60" r="3" fill="#e6a4b4"/>
+  <circle cx="45" cy="100" r="3" fill="#dd8fa0"/>
+</svg></div>
+</section>
+
+<section id="details">
+  <div class="wrap">
+    <p class="label">WHEN &amp; WHERE</p>
+    <div class="card">
+      <p class="label">CEREMONY</p>
+      <h3>Friday, November 20, 2026<br>9:00 in the morning</h3>
+      <p class="venue-name">Sri Venkateswara Temple</p>
+      <p class="venue-addr">1 Balaji Temple Dr, Bridgewater, NJ 08807</p>
+      <a class="btn" href="https://maps.google.com/?q=1+Balaji+Temple+Dr,+Bridgewater,+NJ+08807" target="_blank" rel="noopener">VIEW MAP ↗</a>
+      <div style="margin-top:16px;"><a class="btn solid" href="#rsvp">RSVP ↓</a></div>
+    </div>
+  </div>
+</section>
+
+<section id="rsvp">
+  <div class="wrap">
+    <div class="card">
+      <p class="label" style="text-align:center; display:block;">KINDLY REPLY BY SUNDAY, NOVEMBER 1, 2026</p>
+      <h3>Sai Kalyan &amp; Gayathri</h3>
+
+      <form id="rsvp-form">
+        <div class="field">
+          <label>YOUR NAME</label>
+          <input type="text" id="rsvp-name" placeholder="Full name" required>
+        </div>
+        <div class="field">
+          <label>EMAIL (OPTIONAL — TO FIND YOUR RSVP LATER)</label>
+          <input type="email" id="rsvp-email" placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label>WILL YOU JOIN US?</label>
+          <div class="choice-row">
+            <div class="choice active" data-val="accepts">Joyfully accepts</div>
+            <div class="choice" data-val="declines">Regretfully declines</div>
+          </div>
+        </div>
+        <div class="field">
+          <label>GUESTS IN YOUR PARTY (INCLUDING YOU)</label>
+          <select id="rsvp-guests">
+            <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>A NOTE FOR THE COUPLE (OPTIONAL)</label>
+          <textarea id="rsvp-note" placeholder="Dietary needs, well-wishes…"></textarea>
+        </div>
+        <button type="submit" class="send-btn">SEND RSVP</button>
+      </form>
+
+      <div class="find-row">
+        <div style="flex:1;">
+          <div class="find-label">Already responded? Find your RSVP:</div>
+          <div style="display:flex; gap:10px;">
+            <input type="text" id="find-code" placeholder="Your code or email">
+            <button class="btn" id="find-btn" style="white-space:nowrap;">FIND</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="confirm">
+  <div class="wrap">
+    <div class="card">
+      <p class="label">CONFIRMATION</p>
+      <h3 id="confirm-title">Awaiting your reply</h3>
+      <p id="confirm-body">Once you send your RSVP, your confirmation and code will appear here.</p>
+      <a class="btn" href="#rsvp" id="confirm-cta">RSVP ↑</a>
+    </div>
+  </div>
+</section>
+
+<footer>Sai Kalyan &amp; Gayathri</footer>
+</main>
+
+<script>
+// ----- scattered petals -----
+(function(){
+  const field = document.getElementById('petal-field');
+  const n = 22;
+  for(let i=0;i<n;i++){
+    const s = document.createElement('span');
+    s.style.left = Math.random()*100 + 'vw';
+    s.style.top = Math.random()*100 + 'vh';
+    const size = 4 + Math.random()*6;
+    s.style.width = size+'px';
+    s.style.height = size+'px';
+    s.style.opacity = .25 + Math.random()*.4;
+    field.appendChild(s);
+  }
+})();
+
+// ----- envelope intro -----
+const envScreen = document.getElementById('envelope-screen');
+const page = document.getElementById('page');
+envScreen.addEventListener('click', () => {
+  envScreen.classList.add('opened');
+  setTimeout(() => {
+    envScreen.classList.add('hide');
+    page.style.opacity = 1;
+  }, 900);
+  setTimeout(() => { envScreen.style.display = 'none'; }, 1700);
+});
+
+// ----- RSVP choice toggle -----
+document.querySelectorAll('.choice').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('.choice').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+  });
+});
+
+// ----- storage helpers (per-viewer, local only) -----
+function saveRSVP(entry){
+  try{
+    localStorage.setItem('rsvp_' + entry.code, JSON.stringify(entry));
+    localStorage.setItem('rsvp_last_code', entry.code);
+  }catch(e){ console.error('Storage error', e); }
+}
+function findRSVP(query){
+  try{
+    query = query.trim().toLowerCase();
+    for(let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      if(k && k.startsWith('rsvp_') && k !== 'rsvp_last_code'){
+        const entry = JSON.parse(localStorage.getItem(k));
+        if(entry.code.toLowerCase() === query || (entry.email && entry.email.toLowerCase() === query)){
+          return entry;
+        }
+      }
+    }
+  }catch(e){ console.error('Storage error', e); }
+  return null;
+}
+function showConfirmation(entry){
+  const title = document.getElementById('confirm-title');
+  const body = document.getElementById('confirm-body');
+  const cta = document.getElementById('confirm-cta');
+  if(entry.attending === 'accepts'){
+    title.textContent = 'See you there, ' + entry.name.split(' ')[0] + '!';
+    body.textContent = 'Thank you for joyfully accepting — we can\'t wait to celebrate with you.';
+  } else {
+    title.textContent = 'We\'ll miss you, ' + entry.name.split(' ')[0];
+    body.textContent = 'Thank you for letting us know. You\'ll be in our thoughts on the day.';
+  }
+  cta.innerHTML = 'CODE: ' + entry.code;
+  cta.style.pointerEvents = 'none';
+}
+
+// ----- load last RSVP on page load -----
+(function(){
+  try{
+    const lastCode = localStorage.getItem('rsvp_last_code');
+    if(lastCode){
+      const entry = JSON.parse(localStorage.getItem('rsvp_' + lastCode));
+      if(entry) showConfirmation(entry);
+    }
+  }catch(e){}
+})();
+
+// ----- form submit -----
+document.getElementById('rsvp-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  const name = document.getElementById('rsvp-name').value.trim();
+  if(!name) return;
+  const email = document.getElementById('rsvp-email').value.trim();
+  const attending = document.querySelector('.choice.active').dataset.val;
+  const guests = document.getElementById('rsvp-guests').value;
+  const note = document.getElementById('rsvp-note').value.trim();
+  const code = Math.random().toString(36).slice(2,8).toUpperCase();
+  const entry = {name, email, attending, guests, note, code};
+  saveRSVP(entry);
+  showConfirmation(entry);
+  document.getElementById('confirm').scrollIntoView({behavior:'smooth'});
+});
+
+// ----- find RSVP -----
+document.getElementById('find-btn').addEventListener('click', function(){
+  const q = document.getElementById('find-code').value;
+  if(!q) return;
+  const entry = findRSVP(q);
+  if(entry){
+    showConfirmation(entry);
+    document.getElementById('confirm').scrollIntoView({behavior:'smooth'});
+  } else {
+    alert('No RSVP found for that code or email.');
+  }
+});
+</script>
+</body>
+</html>
