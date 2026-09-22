@@ -63,6 +63,18 @@ body{
   margin-bottom:18px;
   line-height:1.7;
 }
+/* Ganesha icon above Telugu blessings */
+.ganesh-icon-wrap{
+  display:flex; justify-content:center;
+  margin-bottom:14px;
+}
+.ganesh-icon{
+  width:clamp(46px, 8vw, 70px);
+  height:auto;
+  fill:var(--deep-red);
+  opacity:.88;
+  filter:drop-shadow(0 2px 5px rgba(120,20,20,.18));
+}
 
 /* =========================================================
    PAPER TEXTURE OVERLAY (Layer 1)
@@ -255,6 +267,46 @@ section{position:relative; overflow:hidden;}
   position:relative; z-index:10;
   width:100%;
   padding: clamp(60px, 10vh, 120px) 24px clamp(60px, 10vh, 100px);
+}
+
+/* ---- Garland decorations — top corners, behind text ---- */
+.hero-garland-left,
+.hero-garland-right{
+  position:absolute;
+  top:0;
+  width:clamp(180px, 34vw, 420px);
+  pointer-events:none;
+  z-index:4;           /* above paper grain (1,2) but below text (10) */
+  opacity:.92;
+}
+.hero-garland-left{
+  left:0;
+  transform-origin:top left;
+  /* Fade right & bottom edges so it blends into the warm paper */
+  mask-image:
+    linear-gradient(to right,  rgba(0,0,0,.95) 40%, transparent 100%),
+    linear-gradient(to bottom, rgba(0,0,0,.95) 45%, transparent 90%);
+  mask-composite:intersect;
+  -webkit-mask-image:
+    linear-gradient(to right,  rgba(0,0,0,.95) 40%, transparent 100%),
+    linear-gradient(to bottom, rgba(0,0,0,.95) 45%, transparent 90%);
+  -webkit-mask-composite:source-in;
+}
+.hero-garland-right{
+  right:0;
+  transform-origin:top right;
+  mask-image:
+    linear-gradient(to left,   rgba(0,0,0,.95) 40%, transparent 100%),
+    linear-gradient(to bottom, rgba(0,0,0,.95) 45%, transparent 90%);
+  mask-composite:intersect;
+  -webkit-mask-image:
+    linear-gradient(to left,   rgba(0,0,0,.95) 40%, transparent 100%),
+    linear-gradient(to bottom, rgba(0,0,0,.95) 45%, transparent 90%);
+  -webkit-mask-composite:source-in;
+}
+.hero-garland-left img,
+.hero-garland-right img{
+  width:100%; height:auto; display:block;
 }
 
 /* Fine gold ornamental divider lines on hero */
@@ -641,10 +693,32 @@ section{position:relative; overflow:hidden;}
    CONFIRMATION
    ========================================================= */
 #confirm{
-  padding:80px 24px;
+  padding:80px 24px 100px;
   position:relative;
-  background:var(--ivory);
+  /* Continue RSVP warm parchment, fade back to ivory */
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 20%, rgba(250,245,230,.7) 0%, transparent 70%),
+    linear-gradient(to bottom,
+      var(--parchment) 0%,
+      var(--warm-cream) 30%,
+      var(--ivory) 100%);
 }
+/* Paper grain overlay — matches hero & RSVP texture */
+#confirm::before{
+  content:'';
+  position:absolute; inset:0; z-index:0; pointer-events:none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0px, transparent 3px, rgba(139,110,70,.015) 3px, rgba(139,110,70,.015) 4px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 4px, rgba(139,110,70,.010) 4px, rgba(139,110,70,.010) 5px);
+}
+/* Soft top fade — hides the hard section boundary */
+#confirm::after{
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:80px;
+  z-index:0; pointer-events:none;
+  background:linear-gradient(to bottom, var(--parchment) 0%, transparent 100%);
+}
+#confirm .wrap{ position:relative; z-index:1; }
 #confirm .card{text-align:center; max-width:520px;}
 #confirm h3{font-family:'Cinzel','Cormorant Garamond',serif; font-size:28px; margin:8px 0 12px;}
 #confirm p{color:var(--ink-soft);}
@@ -773,6 +847,13 @@ footer{
   .venue-name{font-size:20px;}
 
   #confirm{padding:60px 16px;}
+
+  /* Garlands — smaller on mobile, reduced opacity */
+  .hero-garland-left,
+  .hero-garland-right{
+    width:clamp(100px, 38vw, 170px);
+    opacity:.7;
+  }
 }
 
 /* =========================================================
@@ -834,15 +915,45 @@ footer{
 
 <!-- ====== HERO / LANDING (Image 3) ====== -->
 <section id="hero">
+  <!-- Garland decorations — top corners -->
+  <div class="hero-garland-left" aria-hidden="true">
+    <img src="garland-left.png" alt="">
+  </div>
+  <div class="hero-garland-right" aria-hidden="true">
+    <img src="garland-right.png" alt="">
+  </div>
   <div class="hero-content">
     <div class="wrap">
+      <!-- Ganesha icon -->
+      <div class="ganesh-icon-wrap">
+        <svg class="ganesh-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 115" aria-label="Lord Ganesha">
+          <!-- Crown / Shikha spike -->
+          <path d="M50 2 C49 5.5 46.5 9.5 46.5 13 C46.5 16.5 48 18.5 50 18.5 C52 18.5 53.5 16.5 53.5 13 C53.5 9.5 51 5.5 50 2Z"/>
+          <!-- Left ear — large petal with inner spiral tip -->
+          <path d="M45.5 35 C43 24 29 19 18 27 C8 35 9.5 52 17.5 62 C23 69 34 72 43 66
+                   L41 62 C33 65 22 60 19 51 C16 42 19 33 27 29.5 C34 27 41 32 45 40 Z"/>
+          <path d="M17.5 62 C14 68 16.5 77 23 75 L20.5 69 Z"/>
+          <!-- Right ear — mirror of left -->
+          <path d="M54.5 35 C57 24 71 19 82 27 C92 35 90.5 52 82.5 62 C77 69 66 72 57 66
+                   L59 62 C67 65 78 60 81 51 C84 42 81 33 73 29.5 C66 27 59 32 55 40 Z"/>
+          <path d="M82.5 62 C86 68 83.5 77 77 75 L79.5 69 Z"/>
+          <!-- Body — bold S-curve (head → chest → belly) -->
+          <path d="M45 35 C41 42 42 52 49 58 C55 63 61 70 60 78
+                   C59 86 52 91 45.5 88
+                   C49.5 87 55 83 56 77 C57 71 52 64 46 59
+                   C39 54 36 45 40 37 C41 35.5 43 34.5 45 35Z"/>
+          <!-- Trunk bottom — curls right -->
+          <path d="M45.5 88 C39 92 35 99 38.5 106 C41.5 111 49 113 55 109
+                   C51 108 45 104 45.5 98.5 C46 93 50.5 90 54.5 90 Z"/>
+        </svg>
+      </div>
       <div class="telugu-blessings">
         <p>॥ శ్రీ గణేశాయ నమః ॥</p>
         <p style="margin-top:4px;">॥ శ్రీరస్తు శుభమస్తు ॥ &nbsp; ॥ కళ్యాణమస్తు ॥</p>
       </div>
       <div class="hero-ornament"><div class="rule"></div><div class="diamond"></div><div class="rule"></div></div>
       <p class="blessing">With the blessings of our grandparents, Sri Sudhakar &amp; Smt. Laxmidevamma, and our dear parents, we are beginning a new chapter of love, companionship, and togetherness. As two hearts come together, we look forward to creating a lifetime of beautiful memories.</p>
-      <h1 class="names">Sai Kalyan <span class="amp">&amp;</span> Gayathri</h1>
+      <h1 class="names">Sai Kalyan<br><span class="amp">&amp;</span><br>Gayathri</h1>
       <div class="divider"><div class="rule"></div><div class="dot"></div><div class="rule"></div></div>
       <p class="date-line">Friday, November 20, 2026</p>
       <p class="rsvp-note">We’d love nothing more than to have you there with us as we celebrate and begin this next chapter together. Please come grace the occasion and bless us with your presence.</p>
@@ -918,7 +1029,7 @@ footer{
           </select>
         </div>
         <div class="field">
-          <label>A NOTE FOR THE COUPLE (OPTIONAL)</label>
+          <label>A NOTE FOR THE COUPLE</label>
           <textarea id="rsvp-note" placeholder="Dietary needs, well-wishes…"></textarea>
         </div>
         <div id="rsvp-error" style="display:none; color:var(--deep-red); text-align:center; margin-bottom:16px; font-family:'Cormorant Garamond',serif; font-size:18px;"></div>
